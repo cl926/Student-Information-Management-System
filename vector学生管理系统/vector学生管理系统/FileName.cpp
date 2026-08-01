@@ -1,4 +1,4 @@
-﻿#include<iostream>
+#include<iostream>
 #include<vector>
 #include<algorithm>
 #include<string>
@@ -11,9 +11,9 @@ private:
 	int id;
 	int score;
 public:
-	Student(string n="", int i=0, int s=0) : name(n), id(i), score(s) {}
+	Student(string n = "", int i = 0, int s = 0) : name(n), id(i), score(s) {}
 	void display() {
-		cout << "姓名：" << name << '\t' << "学号：" << id << '\t' << "成绩：" << score << endl;
+		cout << "姓名：" << name << "   " << "学号：" << id << "   " << "成绩：" << score << endl;
 	}
 	string getName() {
 		return name;
@@ -50,37 +50,38 @@ public:
 	void addStudent();
 	void deleteStudent();
 	void showAll();
-	void modifyStudent(); 
+	void modifyStudent();
 	void searchStudent();
 	void saveToFile();
 	void loadFromFile();
 };
-void StudentManager::addStudent () {
-		int id, score;
-		string name;
-		cout<<"请输入学生姓名"<<endl;
-		cin >> name;
-		cout<<"请输入学生学号"<<endl;
-		cin >> id;
-		cout<<"请输入学生成绩"<<endl;
-		cin>> score;
-		v.push_back(Student(name, id, score));
-	}
-void showStudent( Student& s) {
+void StudentManager::addStudent() {
+	int id, score;
+	string name;
+	cout << "请输入学生姓名" << endl;
+	cin >> name;
+	cout << "请输入学生学号" << endl;
+	cin >> id;
+	cout << "请输入学生成绩" << endl;
+	cin >> score;
+	v.push_back(Student(name, id, score));
+}
+void showStudent(Student& s) {
 	s.display();
 }
-void StudentManager::deleteStudent () {
+void StudentManager::deleteStudent() {
 	if (v.begin() == v.end()) {
 		cout << "没有学生信息" << endl;
 		return;
 	}
 	showAll();
 	cout << "请输要删除的学生姓名" << endl;
-	string n; 
+	string n;
 	cin >> n;
 	int count = 0;
-	for (vector<Student>::iterator it = v.begin();it != v.end();it++,count++) {
-		if ((*it).getName() == n)  v.erase(v.begin() + count, v.begin() + count);
+	for (vector<Student>::iterator it = v.begin();it != v.end();) {
+		if ((*it).getName() == n)  it=v.erase(it);
+		else it++;
 	}
 }
 void StudentManager::showAll() {
@@ -88,52 +89,58 @@ void StudentManager::showAll() {
 		cout << "没有学生信息" << endl;
 		return;
 	}
-	for_each(v.begin(),v.end(), showStudent);
+	for_each(v.begin(), v.end(), showStudent);
 }
 void StudentManager::modifyStudent() {
-	if(v.begin() ==v.end()) {
+	if (v.size() == 0) {
 		cout << "没有学生信息" << endl;
 		return;
 	}
 	showAll();
-	string n,t;
-	int I, s;
-	cout<<"请输入要修改的学生姓名"<<endl;
+	string na, t;
+	int I, s, target=0;
+	cout << "请输入要修改的学生姓名" << endl;
 	cin >> t;
 	for (int i = 0;i < v.size();i++) {
 		if (v[i].isName(t)) {
-			cout<< "请输入修改后的学生信息，" << endl;
+			cout << "请输入修改后的学生信息，" << endl;
 			cout << "姓名:(如果无改动请按回车)";
-			cin.ignore('\n', 100);
-			getline(cin, n);
-			if(!n.empty()) v[i].setName(n);
-			cout<< "学号:(如果无改动请输入0)";
+			cin.ignore( 100,'\n');
+			getline(cin, na);
+			if (!na.empty()) v[i].setName(na);
+			cout << "学号:(如果无改动请输入0)";
 			cin >> I;
 			if (I != 0)v[i].setID(I);
 			cout << "成绩:(如果无改动请输入0)";
 			cin >> s;
 			if (s != 0) v[i].setScore(s);
+			target = 1;
+			break;
 		}
-		else{ cout << "没有该学生信息" << endl; }
+	}
+	if (target == 0) {
+		cout << "没有找到该学生" << endl;
 	}
 }
 void StudentManager::searchStudent() {
-	if (v.begin() == v.end()) {
+	if (v.size() == 0) {
 		cout << "没有学生信息" << endl;
 		return;
 	}
 	string n;
+	int t=0;
 	cout << "请输入要查询的学生姓名" << endl;
-	cin.ignore('\n', 100);
+	cin.ignore(100,'\n');
 	getline(cin, n);
 	for (int i = 0;i < v.size();i++) {
 		if (v[i].isName(n)) {
+			t = 1;
 			cout << "姓名：" << v[i].getName() << '\t' << "学号：" << v[i].getID() << '\t' << "成绩：" << v[i].getScore() << endl;
-
-	    }
-		else {
-			cout<< "没有该学生信息" << endl;
+			
 		}
+	}
+	if (t == 0) {
+		cout << "没有该学生信息" << endl;
 	}
 }
 void StudentManager::saveToFile() {
@@ -143,26 +150,26 @@ void StudentManager::saveToFile() {
 		return;
 	}
 	for (int i = 0;i < v.size();i++) {
-		outfile<<v[i].getName() << " " << v[i].getID() << " " << v[i].getScore() << endl;
-	 }
+		outfile << v[i].getName() << " " << v[i].getID() << " " << v[i].getScore() << endl;
+	}
 	outfile.close();
 	cout << "保存成功" << endl;
 }
 void StudentManager::loadFromFile() {
 	ifstream infile("student.dat", ios::in);
-	if(!infile){
-		cout << "打开文件student.dat失败"<<endl;
+	if (!infile) {
+		cout << "打开文件student.dat失败" << endl;
 		return;
-	}	
+	}
 	string name;
 	int id, score;
 	while (infile >> name >> id >> score) {
 		v.push_back(Student(name, id, score));
 	}
 	infile.close();
-	cout<< "加载成功" << endl;
+	cout << "加载成功" << endl;
 }
-	
+
 int main() {
 	StudentManager sm;
 	sm.loadFromFile();
@@ -197,8 +204,8 @@ int main() {
 			cout << "退出系统" << endl;
 			break;
 		default:
-			cout<< "无效的选项，请重新输入" << endl;
-			
+			cout << "无效的选项，请重新输入" << endl;
+
 		}
 	} while (choice != 0);
 	return 0;
